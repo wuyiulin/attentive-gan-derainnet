@@ -73,7 +73,7 @@ class DeRainNet(object):
 
         return gan_loss, discriminative_loss, auto_encoder_output
 
-    def inference(self, input_tensor, name, reuse=False):
+    def inference(self, input_tensor, name, reuse=tf.compat.v1.AUTO_REUSE):
         """
         生成最后的结果图
         :param input_tensor:
@@ -111,6 +111,7 @@ if __name__ == '__main__':
 
     g_loss, d_loss, _ = net.compute_loss(input_tensor, label_tensor, mask_tensor, 'loss')
     g_loss2, d_loss2, _ = net.compute_loss(input_tensor, label_tensor, mask_tensor, 'loss', reuse=True)
-
+    '''
     for vv in tf.trainable_variables():
         print(vv.name)
+    '''

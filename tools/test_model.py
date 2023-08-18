@@ -8,18 +8,31 @@
 """
 test model
 """
+
+import os
+import sys 
+import pdb
+#foldPath = format(os.path.abspath(os.path.join(os.getcwd(), "..")))
+foldPath = format(os.getcwd())
+sys.path.append(foldPath)
 import os.path as ops
 import argparse
-
+import glob
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
-from skimage.measure import compare_ssim
-from skimage.measure import compare_psnr
-
+#from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity
+#from skimage.measure import compare_psnr
+from skimage.metrics import peak_signal_noise_ratio as compare_psnr
+#from test import tt
 from attentive_gan_model import derain_drop_net
 from config import global_config
+from tqdm import tqdm, trange
+
+
+
 
 CFG = global_config.cfg
 
@@ -82,7 +95,14 @@ def test_model(image_path, weights_path, label_path=None):
     :param label_path:
     :return:
     """
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
     assert ops.exists(image_path)
+
+    #### Get img_name ####
+    filepath = image_path
+    basename = ops.basename(filepath) # example.py
+    filename = ops.splitext(basename)[0] # example
+    #####################
 
     input_tensor = tf.placeholder(dtype=tf.float32,
                                   shape=[CFG.TEST.BATCH_SIZE, CFG.TEST.IMG_HEIGHT, CFG.TEST.IMG_WIDTH, 3],
@@ -107,10 +127,22 @@ def test_model(image_path, weights_path, label_path=None):
     output, attention_maps = net.inference(input_tensor=input_tensor, name='derain_net')
 
     # Set sess configuration
-    sess_config = tf.ConfigProto(allow_soft_placement=True)
-    sess_config.gpu_options.per_process_gpu_memory_fraction = CFG.TEST.GPU_MEMORY_FRACTION
-    sess_config.gpu_options.allow_growth = CFG.TEST.TF_ALLOW_GROWTH
-    sess_config.gpu_options.allocator_type = 'BFC'
+    #sess_config = tf.ConfigProto(allow_soft_placement=True)
+    #sess_config = tf.ConfigProto(device_count={'CPU':2})
+
+    #################################################
+    cpu_num = 2
+    sess_config = tf.ConfigProto(device_count={"CPU": cpu_num},
+                inter_op_parallelism_threads = cpu_num,
+                intra_op_parallelism_threads = cpu_num,
+                log_device_placement=True)
+ 
+
+    #################################################
+    #pdb.set_trace()
+    #sess_config.gpu_options.per_process_gpu_memory_fraction = CFG.TEST.GPU_MEMORY_FRACTION
+    #sess_config.gpu_options.allow_growth = CFG.TEST.TF_ALLOW_GROWTH
+    #sess_config.gpu_options.allocator_type = 'BFC'
 
     sess = tf.Session(config=sess_config)
 
@@ -133,15 +165,16 @@ def test_model(image_path, weights_path, label_path=None):
             label_image_vis_gray = cv2.cvtColor(label_image_vis, cv2.COLOR_BGR2YCR_CB)[:, :, 0]
             output_image_gray = cv2.cvtColor(output_image, cv2.COLOR_BGR2YCR_CB)[:, :, 0]
             psnr = compare_psnr(label_image_vis_gray, output_image_gray)
-            ssim = compare_ssim(label_image_vis_gray, output_image_gray)
+            #ssim = compare_ssim(label_image_vis_gray, output_image_gray)
+            ssim = structural_similarity(label_image_vis_gray, output_image_gray)
 
             print('SSIM: {:.5f}'.format(ssim))
             print('PSNR: {:.5f}'.format(psnr))
 
         # 保存并可视化结果
-        cv2.imwrite('src_img.png', image_vis)
-        cv2.imwrite('derain_ret.png', output_image)
-
+        cv2.imwrite('img_output/src/'+filename +'_.png', image_vis)
+        cv2.imwrite('img_output/derain_ret/'+filename +'_.png', output_image)
+        '''
         plt.figure('src_image')
         plt.imshow(image_vis[:, :, (2, 1, 0)])
         plt.figure('derain_ret')
@@ -159,7 +192,7 @@ def test_model(image_path, weights_path, label_path=None):
         plt.imshow(atte_maps[3][0, :, :, 0], cmap='jet')
         plt.savefig('atte_map_4.png')
         plt.show()
-
+        '''
     return
 
 
@@ -168,4 +201,8 @@ if __name__ == '__main__':
     args = init_args()
 
     # test model
-    test_model(args.image_path, args.weights_path, args.label_path)
+    pngset = glob.glob(args.image_path+'*.jpg')
+    progress = tqdm(total=len(pngset))
+    for png_file in pngset:
+        test_model(png_file, args.weights_path, args.label_path)
+        progress.update(1)

@@ -4,5 +4,6 @@ numpy
 scikit_image
 easydict
 matplotlib
-skimage
+skimage==0.19.3
 tensorflow_gpu==1.15.0
+matplotlib

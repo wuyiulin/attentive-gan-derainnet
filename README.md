@@ -1,3 +1,34 @@
+# My contribution
+
+### Update part of Skimage code
+###  Modify the single image testing to test on an entire folder
+### Added a script to merge the resulting images with the original images.
+### Added a script to convert jpg format to png format.(optimal)
+
+##  Test model
+```
+python tools/test_model.py --weights_path ./weights/derain_gan/derain_gan.ckpt-100000 --image_path ./img_input_src/
+```
+## Convert jpg format to png(optimal)
+```
+python JPG_to_PNG.py
+```
+
+## Merge the resulti and source
+```
+python merge_img.py
+```
+
+## Notice
+Before u start, u should put all ur image to fold img_input_src.
+Coverted PNG file will stay in img_input fold.
+Merged PNG file will stay in img_merge.
+
+## Contact
+Further information please contact me.
+
+wuyiulin@gmail.com
+
 # attentive-gan-derainnet
 Use tensorflow to implement a Deep Convolution Generative Adversarial Network for image derain 
 task mainly based on the CVPR2018 paper "Attentive Generative Adversarial Network for Raindrop 
@@ -212,3 +243,5 @@ old model.
 - [x] Parameter adjustment
 - [x] Test different loss function design
 - [ ] Add tensorflow service
+
+

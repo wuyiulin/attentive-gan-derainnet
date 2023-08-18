@@ -51,6 +51,6 @@ __C.TEST.TF_ALLOW_GROWTH = False
 # Set the test batch size
 __C.TEST.BATCH_SIZE = 1
 # Set test image height
-__C.TEST.IMG_HEIGHT = 240
+__C.TEST.IMG_HEIGHT = 1440
 # Set test image width
-__C.TEST.IMG_WIDTH = 360
+__C.TEST.IMG_WIDTH = 2560
