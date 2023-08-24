@@ -9,7 +9,7 @@
 ```
 python tools/test_model.py --weights_path ./weights/derain_gan/derain_gan.ckpt-100000 --image_path ./img_input_src/
 ```
-## Convert jpg format to png(optimal)
+## Convert jpg format to png(optional)
 ```
 python JPG_to_PNG.py
 ```
