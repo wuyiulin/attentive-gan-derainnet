@@ -3,7 +3,7 @@
 ### Update part of Skimage code
 ###  Modify the single image testing to test on an entire folder
 ### Added a script to merge the resulting images with the original images.
-### Added a script to convert jpg format to png format.(optimal)
+### Added a script to convert jpg format to png format.(optional)
 
 ##  Test model
 ```
