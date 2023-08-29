@@ -14,7 +14,7 @@ python tools/test_model.py --weights_path ./weights/derain_gan/derain_gan.ckpt-1
 python JPG_to_PNG.py
 ```
 
-## Merge the resulti and source
+## Merge the result and source
 ```
 python merge_img.py
 ```
